@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using System.Linq;
 
 public class ScoreHandler : MonoBehaviour {
 
 	public List<Text> scoresTexts = new List<Text> ();
 	public List<Score>scores = new List<Score> ();
+	//used to sort
+	public List<Score> sortedScores = new List<Score>();
+	public UserHandler userHandler;
 	
 	public IEnumerator GetScores()
 	{
@@ -30,27 +34,53 @@ public class ScoreHandler : MonoBehaviour {
 
 					if(tempString[tempString.Length - 1] == ',')
 						tempString = tempString.Substring(0, tempString.Length - 1);
-					scores.Add (JsonUtility.FromJson<Score> (tempString));
-					if (i <11)//only adding the first 10 to the leaderboards
-						scoresTexts [i].text = scores [i].Score1.ToString ("n0");
-					print (scores[i].Score1);
+					scores.Add (JsonUtility.FromJson<Score> (tempString));//**
+					//scores.OrderByDescending(x => x.Score1);
 					i++;
 				}
 			}
 		}
 	}
+
+	public void Order()
+	{//order lst form highest to lowest
+		List<Score> trackerList = new List<Score>();
+
+		foreach (Score s in scores) {
+			trackerList.Add (s);
+		}
+
+		for (int i = 0; i < scores.Count; i++) 
+		{
+			Score element = trackerList [0];
+			int count = 0;
+
+			for (int j = 0; j < trackerList.Count; j++) 
+			{
+				if (trackerList [j].Score1 > element.Score1) 
+				{
+					element = trackerList [j];
+					count = j;
+				}
+			}
+			trackerList.RemoveAt(count);
+			sortedScores.Add (element);
+		}
+		for (int i = 0; i < sortedScores.Count; i++)
+		{
+			if (i <11)//only adding the first 10 to the leaderboards
+				scoresTexts [i].text = sortedScores[i].Score1.ToString ("n0");
+		}
+	}
 		
 	public IEnumerator PostScore()
 	{
-		Score scoreToPost = new Score(0,GameManager.gameManager.scoreManager.score);
+		Score scoreToPost = new Score(userHandler.userID,GameManager.gameManager.scoreManager.score);
 		UnityWebRequest www = UnityWebRequest.Post("http://localhost:2222/api/scores", "");
 		UploadHandler customUploadHandler = new UploadHandlerRaw (System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(scoreToPost)));
 		customUploadHandler.contentType = "application/json";
 		www.uploadHandler = customUploadHandler;
 		yield return www.Send ();
-
-		string playerIDString = www.GetResponseHeader ("Location").Substring(32);
-		//	PlayerID = System.Convert.ToInt32 (playerIDString);
 
 		if (www.error != null)
 			Debug.Log ("Error: " + www.error);

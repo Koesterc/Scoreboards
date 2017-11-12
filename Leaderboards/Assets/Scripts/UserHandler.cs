@@ -9,6 +9,10 @@ public class UserHandler : MonoBehaviour {
 
 	public List<Text> usersTexts = new List<Text> ();
 	public List<User>users = new List<User> ();
+	public ScoreHandler scoreHandler;
+	public int userID;
+
+	public List<User>sortedUsers = new List<User> ();
 
 	public IEnumerator GetUsers()
 	{
@@ -32,12 +36,25 @@ public class UserHandler : MonoBehaviour {
 					if(tempString[tempString.Length - 1] == ',')
 						tempString = tempString.Substring(0, tempString.Length - 1);
 					users.Add (JsonUtility.FromJson<User> (tempString));
-					if (i <11)//only adding the first 10 to the leaderboards
-						usersTexts [i].text = users[i].Name;
-					print (users[i].Name);
 					i++;
 				}
 			}
+		}
+		StartCoroutine (scoreHandler.PostScore());
+	}
+
+	public void SortUsers()
+	{
+		for (int i= 0; i <= 10 ;i++)
+		{
+			for (int j= 0; j < scoreHandler.sortedScores.Count;j++)
+			{
+				if (scoreHandler.sortedScores [i].UserID == users [j].UserID) {
+					sortedUsers.Add (users [j]);
+				}
+			}
+			if (i <11)
+				usersTexts [i].text = sortedUsers[i].Name;
 		}
 	}
 
@@ -51,7 +68,7 @@ public class UserHandler : MonoBehaviour {
 		yield return www.Send ();
 
 		string playerIDString = www.GetResponseHeader ("Location").Substring(32);
-		//	PlayerID = System.Convert.ToInt32 (playerIDString);
+		userID = System.Convert.ToInt32 (playerIDString);
 
 		if (www.error != null)
 			Debug.Log ("Error: " + www.error);

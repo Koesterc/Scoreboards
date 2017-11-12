@@ -38,6 +38,7 @@ public class Score
 public class User
 {
 	public string Name;
+	public int UserID;
 
 	public User(string _userName)
 	{

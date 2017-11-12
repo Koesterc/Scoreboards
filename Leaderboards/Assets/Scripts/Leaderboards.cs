@@ -14,14 +14,15 @@ public class Leaderboards : MonoBehaviour {
 
 	// Use this for initialization
 	public void GameOver() {
-		StartCoroutine (scoreHandler.PostScore());
-		StartCoroutine (userHandler.PostPlayer());
 		StartCoroutine (Wait());
 	}
 
 	IEnumerator Wait()
 	{
-		yield return new WaitForSeconds (1f);
+		StartCoroutine (userHandler.PostPlayer());
+		yield return new WaitForSeconds (3f);
+		scoreHandler.Order ();
+		userHandler.SortUsers();
 		scoreBoards.SetActive (true);
 		Time.timeScale = 0;
 	}
