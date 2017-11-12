@@ -39,4 +39,23 @@ public class ScoreHandler : MonoBehaviour {
 			}
 		}
 	}
+		
+	public IEnumerator PostScore()
+	{
+		Score scoreToPost = new Score(0,GameManager.gameManager.scoreManager.score);
+		UnityWebRequest www = UnityWebRequest.Post("http://localhost:2222/api/scores", "");
+		UploadHandler customUploadHandler = new UploadHandlerRaw (System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(scoreToPost)));
+		customUploadHandler.contentType = "application/json";
+		www.uploadHandler = customUploadHandler;
+		yield return www.Send ();
+
+		string playerIDString = www.GetResponseHeader ("Location").Substring(32);
+		//	PlayerID = System.Convert.ToInt32 (playerIDString);
+
+		if (www.error != null)
+			Debug.Log ("Error: " + www.error);
+		else
+			Debug.Log ("Success: " + www.responseCode);	
+		StartCoroutine(GetScores());
+	}
 }

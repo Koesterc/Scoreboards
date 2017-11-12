@@ -6,6 +6,8 @@ public class Bubble : MonoBehaviour {
 
 	public void Pop()
 	{
+		if (Time.timeScale < 1)
+			return;
 		Respawn ();
 		GameManager.gameManager.scoreManager.score += 100;
 		GameManager.gameManager.scoreManager.scoreText.text = "Score "+GameManager.gameManager.scoreManager.score.ToString("n0");
@@ -25,8 +27,11 @@ public class Bubble : MonoBehaviour {
 			print (GameManager.gameManager);
 			GameManager.gameManager.scoreManager.lives--;
 			GameManager.gameManager.scoreManager.livesText.text = "Lives "+GameManager.gameManager.scoreManager.lives.ToString("n0");
-
 			Respawn ();
+			if (GameManager.gameManager.scoreManager.lives <= 0) {
+				GameManager.gameManager.scoreManager.lives = 0;
+				GameManager.gameManager.leaderboards.GameOver ();
+			}
 		}
 	}
 

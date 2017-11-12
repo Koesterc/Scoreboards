@@ -9,7 +9,7 @@ public class UserHandler : MonoBehaviour {
 
 	public List<Text> usersTexts = new List<Text> ();
 	public List<User>users = new List<User> ();
-	
+
 	public IEnumerator GetUsers()
 	{
 		WWW response = new WWW ("http://localhost:2222/api/users");
@@ -51,12 +51,12 @@ public class UserHandler : MonoBehaviour {
 		yield return www.Send ();
 
 		string playerIDString = www.GetResponseHeader ("Location").Substring(32);
-	//	PlayerID = System.Convert.ToInt32 (playerIDString);
+		//	PlayerID = System.Convert.ToInt32 (playerIDString);
 
 		if (www.error != null)
 			Debug.Log ("Error: " + www.error);
 		else
 			Debug.Log ("Success: " + www.responseCode);	
+		StartCoroutine(GetUsers());
 	}
-
 }

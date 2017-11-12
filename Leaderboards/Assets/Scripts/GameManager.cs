@@ -7,27 +7,23 @@ public class GameManager : MonoBehaviour {
 	private GameManager m_gameManager;
 	public static GameManager gameManager;
 	public ScoreManager scoreManager;
-	public ScoreManager leaderboards;
+	public Leaderboards leaderboards;
 	public Score score;
 	public User player;
-	public string userName;
+	public string userName = "Daryl";
+	public int playerID;
 
 	void Awake()
 	{
 		gameManager = m_gameManager;
-		Debug.Log (m_gameManager);
+		//Debug.Log (m_gameManager);
 	}
 }
-
-
-
-
 
 
 [System.Serializable]
 public class Score
 {
-	public int ScoreID;
 	public int UserID;
 	public int Score1;
 
@@ -41,7 +37,6 @@ public class Score
 [System.Serializable]
 public class User
 {
-	public int UserID;
 	public string Name;
 
 	public User(string _userName)
